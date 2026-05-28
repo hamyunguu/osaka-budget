@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <div className="mx-auto min-h-dvh max-w-[480px] pb-20">
+        <div className="mx-auto min-h-dvh max-w-[480px] pb-24">
           {children}
         </div>
         <BottomNav />

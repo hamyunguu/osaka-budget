@@ -100,7 +100,7 @@ export default function InputPage() {
       <button
         onClick={handleSubmit}
         disabled={parseInt(amount, 10) <= 0}
-        className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-medium text-white shadow-sm transition-transform scale97 disabled:opacity-30 dark:bg-white dark:text-black"
+        className="mt-3 mb-4 flex items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-medium text-white shadow-sm transition-transform scale97 disabled:opacity-30 dark:bg-white dark:text-black"
       >
         <Check size={18} />
         기록하기
