@@ -40,6 +40,7 @@ export default function InputPage() {
   };
 
   const displayAmount = parseInt(amount, 10).toLocaleString("ko-KR");
+  const hasAmount = parseInt(amount, 10) > 0;
 
   return (
     <div className="flex min-h-dvh flex-col px-5 pt-14 pb-4">
@@ -63,43 +64,46 @@ export default function InputPage() {
       </div>
 
       {/* Amount display */}
-      <div className="mt-6 flex-1">
+      <div className="mt-5 rounded-2xl bg-[#F7F7F5] py-5 dark:bg-zinc-800">
+        {!hasAmount && (
+          <p className="text-center text-xs text-gray-400 mb-1">아래 키패드로 금액을 입력하세요</p>
+        )}
         <div className="text-center">
           <span className="text-4xl font-bold tracking-tight">{displayAmount}</span>
           <span className="ml-1 text-lg text-gray-400">원</span>
         </div>
       </div>
 
-      {/* Memo */}
-      <div className="mt-4">
-        <input
-          type="text"
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          placeholder="메모 (선택)"
-          maxLength={30}
-          className="w-full rounded-xl border border-gray-200 bg-[#F7F7F5] px-4 py-2.5 text-sm outline-none placeholder:text-gray-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-200"
-        />
-      </div>
-
       {/* Numpad */}
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-3 grid grid-cols-3 gap-2">
         {NUMPAD.map((key) => (
           <button
             key={key}
             type="button"
             onClick={() => handleNumpad(key)}
-            className="flex h-14 items-center justify-center rounded-xl bg-[#F7F7F5] text-lg font-medium text-gray-800 transition-all active:scale-95 active:bg-gray-200 dark:bg-zinc-800 dark:text-gray-200 dark:active:bg-zinc-700"
+            className="flex h-13 items-center justify-center rounded-xl bg-[#F7F7F5] text-lg font-medium text-gray-800 transition-all active:scale-95 active:bg-gray-200 dark:bg-zinc-800 dark:text-gray-200 dark:active:bg-zinc-700"
           >
             {key === "del" ? <Delete size={20} /> : key}
           </button>
         ))}
       </div>
 
+      {/* Memo */}
+      <div className="mt-3">
+        <input
+          type="text"
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+          placeholder="메모 (선택사항)"
+          maxLength={30}
+          className="w-full rounded-xl border border-gray-200 bg-[#F7F7F5] px-4 py-2.5 text-sm outline-none placeholder:text-gray-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-200"
+        />
+      </div>
+
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        disabled={parseInt(amount, 10) <= 0}
+        disabled={!hasAmount}
         className="mt-3 mb-4 flex items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-medium text-white shadow-sm transition-transform scale97 disabled:opacity-30 dark:bg-white dark:text-black"
       >
         <Check size={18} />
