@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useEntries } from "@/hooks/useEntries";
 import { useBudget } from "@/hooks/useBudget";
 import MetricCard from "@/components/MetricCard";
 import ProgressBar from "@/components/ProgressBar";
+import { toast } from "@/components/Toast";
 import { CATEGORIES } from "@/lib/constants";
 import {
   calcRemaining,
@@ -18,7 +20,7 @@ import {
 } from "@/lib/budget";
 import { formatMoney } from "@/lib/utils";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Wallet } from "lucide-react";
 
 const PACE_LABELS = {
   good: { text: "양호", color: "#1D9E75", bg: "bg-green-50 dark:bg-green-950/30" },
@@ -28,7 +30,9 @@ const PACE_LABELS = {
 
 export default function HomePage() {
   const { entries, loaded } = useEntries();
-  const { config } = useBudget();
+  const { config, updateConfig } = useBudget();
+  const [showIncome, setShowIncome] = useState(false);
+  const [incomeAmount, setIncomeAmount] = useState("");
 
   if (!loaded || !config) {
     return (
@@ -140,14 +144,72 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Quick add button */}
-      <Link
-        href="/input"
-        className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-medium text-white shadow-sm transition-transform scale97 dark:bg-white dark:text-black"
-      >
-        <Plus size={18} />
-        지출 기록하기
-      </Link>
+      {/* Quick add buttons */}
+      <div className="mt-5 flex gap-3">
+        <Link
+          href="/input"
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-medium text-white shadow-sm transition-transform scale97 dark:bg-white dark:text-black"
+        >
+          <Plus size={18} />
+          지출 기록
+        </Link>
+        <button
+          onClick={() => setShowIncome(true)}
+          className="flex items-center gap-2 rounded-2xl border border-[#1D9E75] px-5 py-3.5 text-sm font-medium text-[#1D9E75] transition-transform scale97"
+        >
+          <Wallet size={18} />
+          부수입
+        </button>
+      </div>
+
+      {/* Freelance income info */}
+      {config.freelanceIncome > 0 && (
+        <p className="mt-2 text-center text-[11px] text-gray-400">
+          부수입 누적: {formatMoney(config.freelanceIncome)}
+        </p>
+      )}
+
+      {/* Income modal */}
+      {showIncome && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40" onClick={() => setShowIncome(false)}>
+          <div className="mx-6 w-full max-w-[320px] rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900" onClick={(e) => e.stopPropagation()}>
+            <p className="text-center text-sm font-bold">부수입 추가</p>
+            <p className="mt-1 text-center text-xs text-gray-400">
+              외주 등 부수입이 들어오면 금액을 입력하세요
+            </p>
+            <input
+              type="number"
+              value={incomeAmount}
+              onChange={(e) => setIncomeAmount(e.target.value)}
+              placeholder="금액 입력"
+              autoFocus
+              className="mt-4 w-full rounded-xl border border-gray-200 bg-[#F7F7F5] px-4 py-3 text-center text-lg font-bold outline-none focus:border-[#1D9E75] dark:border-zinc-700 dark:bg-zinc-800"
+            />
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={() => { setShowIncome(false); setIncomeAmount(""); }}
+                className="flex-1 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-600 scale97 dark:bg-zinc-800 dark:text-gray-300"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  const num = parseInt(incomeAmount, 10);
+                  if (num > 0) {
+                    updateConfig({ freelanceIncome: config.freelanceIncome + num });
+                    toast(`부수입 +${num.toLocaleString("ko-KR")}원 추가`);
+                    setShowIncome(false);
+                    setIncomeAmount("");
+                  }
+                }}
+                className="flex-1 rounded-xl bg-[#1D9E75] py-2.5 text-sm font-medium text-white scale97"
+              >
+                추가
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
